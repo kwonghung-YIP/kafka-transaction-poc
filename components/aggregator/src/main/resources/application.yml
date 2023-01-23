@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    stream:
+      function:
+        bindings:
+          consolidate-in-0: input-0
+          consolidate-in-1: input-1
+          consolidate-in-2: input-2
+          consolidate-out-0: output
+
+      bindings:
+        input-0:
+          destination: split0
+        input-1:
+          destination: split1
+        input-2:
+          destination: split2
+        output:
+          destination: total

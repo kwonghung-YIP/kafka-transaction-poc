@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    stream:
+      function:
+        bindings:
+          recvCounter-in-0: input
+
+      bindings:
+        input:
+          destination: total

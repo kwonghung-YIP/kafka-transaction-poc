@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    stream:
+      function:
+        bindings:
+          breakdown-in-0: input
+          breakdown-out-0: split-0
+          breakdown-out-1: split-1
+          breakdown-out-2: split-2
+
+      default:
+        producer:
+          productionCount: 6
+
+
+      bindings:
+        input:
+          destination: counter
+        split-0:
+          destination: split0
+        split-1:
+          destination: split1
+        split-2:
+          destination: split2
+
+
