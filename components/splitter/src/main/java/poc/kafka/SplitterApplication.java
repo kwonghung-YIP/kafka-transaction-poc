@@ -4,9 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.stream.binder.BinderFactory;
+import org.springframework.cloud.stream.binder.kafka.KafkaMessageChannelBinder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
@@ -16,6 +25,7 @@ import java.util.function.Function;
 
 @Slf4j
 @SpringBootApplication
+@EnableTransactionManagement
 public class SplitterApplication {
 
     public static void main(String[] args) {
@@ -23,6 +33,18 @@ public class SplitterApplication {
     }
 
     @Bean
+    public PlatformTransactionManager transactionManager(BinderFactory binders,
+                                                         @Value("${unique.tx.id.per.instance:tx-123}") String txId) {
+
+        ProducerFactory<byte[], byte[]> pf = ((KafkaMessageChannelBinder) binders.getBinder(null,
+                MessageChannel.class)).getTransactionalProducerFactory();
+        KafkaTransactionManager tm = new KafkaTransactionManager(pf);
+        tm.setTransactionIdPrefix(txId);
+        return tm;
+    }
+
+    @Bean
+    @Transactional
     public Function<Flux<Long>, Tuple3<Flux<BreakdownRec>,Flux<BreakdownRec>,Flux<BreakdownRec>>> breakdown() {
         return (counter) -> {
             Flux<TotalRec> source = counter.map(ttl -> {
@@ -31,17 +53,26 @@ public class SplitterApplication {
                     var r3 = ttl - r1 - r2;
 
                     TotalRec rec = new TotalRec(ttl,r1,r2,r3);
-                    //log.info("source: {} + {} + {} = {}",rec.r1,rec.r2,rec.r3,rec.ttl);
+                    log.info("splitter: counter:{}, {} + {} + {} = {}",rec.ttl,rec.r1,rec.r2,rec.r3,rec.r1+rec.r2+rec.r3);
                     return rec;
                 }).publish().autoConnect(3);
 
-            source.subscribe(rec -> {
-                log.info("splitter: counter:{}, {} + {} + {} = {}",rec.ttl,rec.r1,rec.r2,rec.r3,rec.r1+rec.r2+rec.r3);
-            });
+//            source.subscribe(rec -> {
+//                log.info("splitter: counter:{}, {} + {} + {} = {}",rec.ttl,rec.r1,rec.r2,rec.r3,rec.r1+rec.r2+rec.r3);
+//            });
 
             Flux<BreakdownRec> r1 = source.map(rec -> new BreakdownRec(rec.ttl,rec.r1));
             Flux<BreakdownRec> r2 = source.map(rec -> new BreakdownRec(rec.ttl,rec.r2));
-            Flux<BreakdownRec> r3 = source.map(rec -> new BreakdownRec(rec.ttl,rec.r3));
+            Flux<BreakdownRec> r3 = source.map(rec -> {
+                        if (Math.random() > 0.5) {
+                            return new BreakdownRec(rec.ttl, rec.r3);
+                        } else {
+                            throw new RuntimeException(String.format("breakdown#3: Raise exception when process %s,%s", rec.ttl, rec.r3));
+                        }
+                    });
+//                    .onErrorContinue((throwable, rec) -> {
+//                        log.error("breakdown#3: Raise exception when process {}", rec);
+//                    });
 
             Tuple3 tuple = Tuples.of(r1,r2,r3);
 

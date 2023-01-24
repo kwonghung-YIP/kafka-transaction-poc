@@ -12,7 +12,7 @@ spring:
             partition-count: 6
             poller:
               initial-delay: 5000
-              fixed-delay: 15000
+              fixed-delay: 6000
 
       kafka:
         binder:
