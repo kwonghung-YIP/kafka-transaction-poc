@@ -45,7 +45,7 @@ public class Splitter2Application {
     }
 
     @Bean
-    @Transactional
+    //@Transactional
     public Consumer<Long> breakdown() {
         return (ttl) -> {
             var r1 = (long)Math.floor(Math.random()*ttl);
@@ -55,12 +55,20 @@ public class Splitter2Application {
             log.info("splitter: counter:{}, {} + {} + {} = {}",ttl,r1,r2,r3,r1+r2+r3);
 
             streamBridge.send("split0",new BreakdownRec(ttl,r1));
+            if (Math.random()>0.95) {
+                log.error("Throw exception in splitter after sending message to split0 for counter {}",ttl);
+                throw new RuntimeException("Throw exception in splitter after sending message to split0");
+            }
             streamBridge.send("split1",new BreakdownRec(ttl,r2));
-            if (Math.random()>0.8) {
-                log.error("Throw exception in splitter for counter {}",ttl);
-                throw new RuntimeException("Exception raise in breakdown");
+            if (Math.random()>0.95) {
+                log.error("Throw exception in splitter after sending message to split1 for counter {}",ttl);
+                throw new RuntimeException("Throw exception in splitter after sending message to split1");
             }
             streamBridge.send("split2",new BreakdownRec(ttl,r3));
+            if (Math.random()>0.95) {
+                log.error("Throw exception in splitter after sending message to split3 for counter {}",ttl);
+                throw new RuntimeException("Throw exception in splitter after sending message to split2");
+            }
         };
     }
 
