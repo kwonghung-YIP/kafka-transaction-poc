@@ -25,14 +25,14 @@ import java.util.function.Function;
 
 @Slf4j
 @SpringBootApplication
-@EnableTransactionManagement
+//@EnableTransactionManagement
 public class SplitterApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SplitterApplication.class, args);
     }
 
-    @Bean
+    //@Bean
     public PlatformTransactionManager transactionManager(BinderFactory binders,
                                                          @Value("${unique.tx.id.per.instance:tx-123}") String txId) {
 
@@ -82,13 +82,14 @@ public class SplitterApplication {
         }
     }
 
-    @Bean
-    public Function<Flux<Long>,Tuple3<Flux<BreakdownRec>,Flux<BreakdownRec>,Flux<BreakdownRec>>> breakdown() {
+    //@Bean
+    public Function<Flux<Long>,Tuple3<Flux<BreakdownRec>,Flux<BreakdownRec>,Flux<BreakdownRec>>> breakdown2() {
         return new TransactionalSplitter();
     }
 
+    @Bean
     //public TransactionalSplitter<Long,BreakdownRec> breakdown() {
-    public Function<Flux<Long>,Tuple3<Flux<BreakdownRec>,Flux<BreakdownRec>,Flux<BreakdownRec>>> breakdown2() {
+    public Function<Flux<Long>,Tuple3<Flux<BreakdownRec>,Flux<BreakdownRec>,Flux<BreakdownRec>>> breakdown() {
         return (counter) -> {
             Flux<TotalRec> source = counter.map(ttl -> {
                     var r1 = (long)Math.floor(Math.random()*ttl);
@@ -104,18 +105,36 @@ public class SplitterApplication {
 //                log.info("splitter: counter:{}, {} + {} + {} = {}",rec.ttl,rec.r1,rec.r2,rec.r3,rec.r1+rec.r2+rec.r3);
 //            });
 
-            Flux<BreakdownRec> r1 = source.map(rec -> new BreakdownRec(rec.ttl,rec.r1));
-            Flux<BreakdownRec> r2 = source.map(rec -> new BreakdownRec(rec.ttl,rec.r2));
+            Flux<BreakdownRec> r1 = source.map(rec -> {
+                        if (Math.random() > 0.95) {
+                            throw new RuntimeException(String.format("breakdown#1: Raise exception when process %s,%s", rec.ttl, rec.r1));
+                        } else {
+                            return new BreakdownRec(rec.ttl, rec.r1);
+                        }
+                    });
+//                    .onErrorContinue((throwable, rec) -> {
+//                        log.error("breakdown#1: Raise exception when process {}", rec);
+//                    });
+            Flux<BreakdownRec> r2 = source.map(rec -> {
+                        if (Math.random() > 0.95) {
+                            throw new RuntimeException(String.format("breakdown#2: Raise exception when process %s,%s", rec.ttl, rec.r2));
+                        } else {
+                            return new BreakdownRec(rec.ttl, rec.r2);
+                        }
+                    });
+//                    .onErrorContinue((throwable, rec) -> {
+//                        log.error("breakdown#2: Raise exception when process {}", rec);
+//                    });
             Flux<BreakdownRec> r3 = source.map(rec -> {
                         if (Math.random() > 0.95) {
                             throw new RuntimeException(String.format("breakdown#3: Raise exception when process %s,%s", rec.ttl, rec.r3));
                         } else {
                             return new BreakdownRec(rec.ttl, rec.r3);
                         }
-                    })
-                    .onErrorContinue((throwable, rec) -> {
-                        log.error("breakdown#3: Raise exception when process {}", rec);
                     });
+//                    .onErrorContinue((throwable, rec) -> {
+//                        log.error("breakdown#3: Raise exception when process {}", rec);
+//                    });
 
             Tuple3 tuple = Tuples.of(r1,r2,r3);
 

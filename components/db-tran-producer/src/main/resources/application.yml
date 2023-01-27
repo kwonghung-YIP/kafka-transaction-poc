@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    stream:
+      function:
+        bindings:
+          produce-out-0: output
+
+      bindings:
+        output:
+          destination: application-request
+          producer:
+            partition-count: 6
+            poller:
+              initial-delay: 5000
+              fixed-delay: 15000
+
+      kafka:
+        binder:
+          auto-add-partitions: true

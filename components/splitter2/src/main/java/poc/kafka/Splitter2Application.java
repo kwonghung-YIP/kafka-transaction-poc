@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 @Slf4j
 @SpringBootApplication
-@EnableTransactionManagement
+//@EnableTransactionManagement
 public class Splitter2Application {
 
     public static void main(String[] args) {
@@ -33,7 +33,7 @@ public class Splitter2Application {
     @Autowired
     private StreamBridge streamBridge;
 
-    @Bean
+    //@Bean
     public PlatformTransactionManager transactionManager(BinderFactory binders,
                                                          @Value("${unique.tx.id.per.instance:tx-123}") String txId) {
 

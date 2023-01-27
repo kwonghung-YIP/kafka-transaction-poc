@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: hung
+      POSTGRES_PASSWORD: pass1234
+      POSTGRES_DB: testDB
+  pgadmin:
+    image: dpage/pgadmin4:6
+    container_name: pgadmin
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: kwonghung.yip@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: pass1234
+#  adminer:
+#    image: adminer
+#    container_name: adminer
+#    ports:
+#      - "8080:8080"
+

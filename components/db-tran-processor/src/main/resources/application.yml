@@ -1,0 +1,41 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+  cloud:
+    stream:
+      function:
+        bindings:
+          saveRequest-in-0: input
+          saveRequest-out-0: output
+
+      bindings:
+        input:
+          destination: application-request
+        output:
+          destination: downstream-noti
+
+      kafka:
+        binder:
+          transaction:
+            transaction-id-prefix: tx-
+          required-acks: all
+
+logging:
+  level:
+    org.springframework.transaction: trace
+    org.springframework.kafka.transaction: debug
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - idea
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/testDB"
+    username: hung
+    password: pass1234
