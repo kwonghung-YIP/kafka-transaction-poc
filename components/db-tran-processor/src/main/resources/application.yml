@@ -14,6 +14,9 @@ spring:
       bindings:
         input:
           destination: application-request
+          consumer:
+            max-attempts: 3
+            default-retryable: false
         output:
           destination: downstream-noti
 
@@ -21,7 +24,11 @@ spring:
         binder:
           transaction:
             transaction-id-prefix: tx-
-          required-acks: all
+            producer:
+              configuration:
+                retries: 1
+                acks: all
+          #required-acks: all
 
 logging:
   level:

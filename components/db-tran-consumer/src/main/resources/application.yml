@@ -4,7 +4,12 @@ spring:
       function:
         bindings:
           consume-in-0: input
-
       bindings:
         input:
           destination: downstream-A,downstream-B
+      kafka:
+        binder:
+          configuration:
+            isolation.level: read_committed
+
+

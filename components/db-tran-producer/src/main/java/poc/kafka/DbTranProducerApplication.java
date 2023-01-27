@@ -25,7 +25,7 @@ public class DbTranProducerApplication {
     public Supplier<ApplicationRequest> produce() {
         return () -> {
             UUID appId = UUID.randomUUID();
-            log.info("Send application request:{}",appId);
+            log.info("Send application request: ({}) {}",seq,appId);
             return new ApplicationRequest(appId,seq++,"channelId","A","S");
         };
     }
