@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-deployment
+spec:
+  selector:
+    matchLabels:
+      app: consumer-pod
+  template:
+    metadata:
+      labels:
+        app: consumer-pod
+    spec:
+      containers:
+        - name: springboot
+          image: bugni/db-tran-consumer
+

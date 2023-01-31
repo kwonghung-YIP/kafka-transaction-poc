@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-deployment
+spec:
+  selector:
+    matchLabels:
+      app: producer-pod
+  template:
+    metadata:
+      labels:
+        app: producer-pod
+    spec:
+      containers:
+        - name: springboot
+          image: bugni/db-tran-producer
+

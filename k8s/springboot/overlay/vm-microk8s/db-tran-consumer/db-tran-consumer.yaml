@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: springboot
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: microk8s
+          volumeMounts:
+            - name: springboot-configmap
+              mountPath: "/app/resources/application-microk8s.yaml"
+              subPath: "application-microk8s.yaml"
+              readOnly: true
+
+      volumes:
+        - name: springboot-configmap
+          configMap:
+            name: db-tran-consumer-application-yml

@@ -1,0 +1,47 @@
+---
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: support
+deploy:
+  kustomize:
+    paths:
+      - k8s/support/base
+---
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: springboot2
+build:
+  insecureRegistries:
+    - "localhost:32000"
+  tagPolicy:
+    customTemplate:
+      template: "springboot2"
+      #template: "springboot2-{{.SHA}}"
+  artifacts:
+    - image: bugni/db-tran-producer
+      context: ./components/db-tran-producer
+      jib:
+        type: maven
+        fromImage: azul/zulu-openjdk:11-latest
+    - image: bugni/db-tran-processor
+      context: ./components/db-tran-processor
+      jib:
+        type: maven
+        fromImage: azul/zulu-openjdk:11-latest
+    - image: bugni/db-tran-consumer
+      context: ./components/db-tran-consumer
+      jib:
+        type: maven
+        fromImage: azul/zulu-openjdk:11-latest
+deploy:
+#  kubectl:
+#    manifests:
+#      - "k8s/springboot/base/db-tran-producer.yaml"
+  kustomize:
+    paths:
+      - k8s/springboot/overlay/vm-microk8s
+#requires:
+#  - configs: ["support"]
+#    path: "./skaffold.yaml"

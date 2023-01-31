@@ -1,0 +1,46 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+  - ../../base
+
+configMapGenerator:
+  - name: db-tran-producer-application-yml
+    behavior: create
+    files:
+      - db-tran-producer/application-microk8s.yaml
+
+  - name: db-tran-processor-application-yml
+    behavior: create
+    files:
+      - db-tran-processor/application-microk8s.yaml
+
+  - name: db-tran-consumer-application-yml
+    behavior: create
+    files:
+      - db-tran-consumer/application-microk8s.yaml
+
+replicas:
+  - name: processor-deployment
+    count: 3
+  - name: consumer-deployment
+    count: 3
+
+patchesStrategicMerge:
+  - db-tran-producer/db-tran-producer.yaml
+  - db-tran-processor/db-tran-processor.yaml
+  - db-tran-consumer/db-tran-consumer.yaml
+
+#patches:
+#  - target:
+#      group: apps
+#      version: v1
+#      kind: Deployment
+#      name: producer-deployment
+#    patch: |-
+#      - op: add
+#        path: /spec/template/spec/containers/0/env/-
+#        value:
+#          name: SPRING_PROFILES_ACTIVE
+#          value: "microk8s"
+      
+      

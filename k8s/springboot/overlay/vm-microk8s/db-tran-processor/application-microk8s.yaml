@@ -1,0 +1,19 @@
+spring:
+  config:
+    activate:
+      on-profile:
+        - microk8s
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: broker-service:9092
+          defaultBrokerPort: 9092
+          auto-create-topics: true
+          auto-add-partitions: true
+
+  datasource:
+    url: "jdbc:postgresql://postgres-service:5432/testDB"
+    username: hung
+    password: pass1234
