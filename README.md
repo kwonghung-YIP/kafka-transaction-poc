@@ -21,6 +21,7 @@ skaffold delete \
   --module support
 ```
 
+```bash 
 docker exec -it broker1 /bin/sh
 docker exec -it broker1 kafka-topics --bootstrap-server localhost:29091 --list
 
@@ -38,4 +39,4 @@ docker exec -it broker1 kafka-configs --bootstrap-server localhost:29091 --alter
 docker exec -it broker1 kafka-configs --bootstrap-server localhost:29091 --alter --entity-type topics --entity-name split0 --add-config retention.ms=900000
 docker exec -it broker1 kafka-configs --bootstrap-server localhost:29091 --alter --entity-type topics --entity-name split1 --add-config retention.ms=900000
 docker exec -it broker1 kafka-configs --bootstrap-server localhost:29091 --alter --entity-type topics --entity-name split2 --add-config retention.ms=900000
-
+```

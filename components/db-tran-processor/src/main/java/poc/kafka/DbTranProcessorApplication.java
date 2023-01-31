@@ -65,7 +65,7 @@ public class DbTranProcessorApplication {
             log.info("sending message to topic {}...","downstream-B");
             streamBridge.send("downstream-B",request.getApplicationId());
 
-            throw new RuntimeException("Boom!!!!");
+            //throw new RuntimeException("Boom!!!!");
         }
 
         @Transactional(propagation = Propagation.REQUIRED)

@@ -3,10 +3,17 @@ apiVersion: skaffold/v2beta29
 kind: Config
 metadata:
   name: support
+
 deploy:
   kustomize:
     paths:
       - k8s/support/base
+
+portForward:
+  - resourceType: service
+    resourceName: pgadmin-service
+    port: 8080
+    localPort: 8080
 ---
 apiVersion: skaffold/v2beta29
 kind: Config

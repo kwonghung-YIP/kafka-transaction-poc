@@ -14,11 +14,16 @@ spring:
       bindings:
         input:
           destination: application-request
+          group: processor
           consumer:
             max-attempts: 3
             default-retryable: false
-        output:
-          destination: downstream-noti
+        downstream-A:
+          producer:
+            partition-count: 6
+        downstream-B:
+          producer:
+            partition-count: 6
 
       kafka:
         binder:
