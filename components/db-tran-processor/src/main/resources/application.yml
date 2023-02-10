@@ -34,6 +34,13 @@ spring:
                 retries: 1
                 acks: all
           #required-acks: all
+        # bindings:
+        #   downstream-A:
+        #     producer:
+        #       transactionManager: "chainedKafkaTransactionManager"
+        #   downstream-B:
+        #     producer:
+        #       transactionManager: "chainedKafkaTransactionManager"
 
 logging:
   level:

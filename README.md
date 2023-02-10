@@ -21,6 +21,15 @@ skaffold delete \
   --module support
 ```
 
+```bash
+docker compose -f kafka-cluster.yaml up -d
+docker compose -f postgres.yaml up -d
+```
+
+```bash
+mvn clean spring-boot:run -Dspring-boot.run.profiles=idea
+```
+
 ```bash 
 docker exec -it broker1 /bin/sh
 docker exec -it broker1 kafka-topics --bootstrap-server localhost:29091 --list

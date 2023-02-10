@@ -1,7 +1,8 @@
 package poc.kafka;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.function.Consumer;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -10,13 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import poc.kafka.pojo.ApplicationRequest;
 import poc.kafka.pojo.AuditTrail;
 import poc.kafka.repo.ApplicationRequestRepository;
 import poc.kafka.repo.AuditTrailRepository;
-
-import java.time.LocalDateTime;
-import java.util.function.Consumer;
 
 @Slf4j
 @SpringBootApplication

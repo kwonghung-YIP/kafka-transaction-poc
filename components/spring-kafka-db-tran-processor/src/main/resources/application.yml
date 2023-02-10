@@ -1,0 +1,32 @@
+spring:
+  sql:
+    init:
+      mode: always
+  jpa:
+    show-sql: true
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create
+
+  kafka:
+    producer:
+      transaction-id-prefix: tx-
+      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+logging:
+  level:
+    org.springframework.transaction: trace
+    org.springframework.kafka.transaction: debug
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - local-docker-compose
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/testDB"
+    username: hung
+    password: pass1234

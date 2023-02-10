@@ -1,0 +1,10 @@
+spring:
+  kafka:
+    consumer:
+      group-id: txn-service
+      key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "org.hung.pojo"
+        isolation.level: read_committed
+
